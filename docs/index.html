@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Refresh Opportunity Scoring via Non-Leaky Gradient Boosted Trees</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #0f766e;
+      --accent-light: #f0fdfa;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card);
+      padding: 3rem 3.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+      border: 1px solid var(--border);
+    }
+    header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid #99f6e4;
+      margin-bottom: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    h1 {
+      font-size: 2rem;
+      line-height: 1.25;
+      margin: 0 0 0.75rem 0;
+      color: #0f172a;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    h2 {
+      font-size: 1.35rem;
+      color: #0f172a;
+      margin-top: 2.25rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .abstract-box {
+      background: #f1f5f9;
+      border-left: 4px solid var(--accent);
+      padding: 1.25rem 1.5rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1.5rem 0;
+    }
+    .abstract-box strong {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.92rem;
+    }
+    th, td {
+      padding: 0.7rem 0.85rem;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+    th {
+      background-color: #f8fafc;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    tr:nth-child(even) {
+      background-color: #fcfdfe;
+    }
+    .highlight-row {
+      background-color: var(--accent-light) !important;
+      font-weight: 600;
+    }
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+    .kpi-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .kpi-val {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .kpi-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+    .figure-box {
+      margin: 1.75rem 0;
+      text-align: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      background: #ffffff;
+    }
+    .figure-box img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .figure-caption {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+    }
+    code {
+      background: #f1f5f9;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      color: #0f766e;
+    }
+    .code-tag {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 2px solid var(--border);
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    a { color: var(--accent); text-decoration: none; font-weight: 500; }
+    a:hover { text-decoration: underline; }
+    @media (max-width: 640px) {
+      .container { padding: 1.5rem 1.25rem; }
+      h1 { font-size: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Search Intelligence Capstone &middot; Refresh / Content Opportunity Scoring</div>
+      <h1>Content Refresh Opportunity Scoring via Non-Leaky Gradient Boosted Trees</h1>
+      <div class="meta">
+        <strong>Author:</strong> Muhammad Taha &nbsp;|&nbsp;
+        <strong>Cohort:</strong> Machine Learning &middot; July 2026 &nbsp;|&nbsp;
+        <strong>Status:</strong> Decision-Support Research Paper
+      </div>
+    </header>
+
+    <!-- SECTION 1: TITLE + ABSTRACT (5 SENTENCES) -->
+    <div class="abstract-box">
+      <strong>Abstract</strong>
+      <p style="margin:0;">
+        Editorial teams managing large web catalogs face a persistent resource allocation challenge when prioritizing aging articles for content refreshes before organic search traffic erodes. This study investigates whether a machine learning ranking model trained exclusively on historical visibility and freshness signals can outperform a deterministic staleness-by-volume heuristic in detecting decaying pages. Using 30,000 anonymized page-level search records from the FlyRank Search Intelligence dataset, we engineered strictly non-leaky features capturing exposure velocity, SERP position-CTR dynamics, and relative content staleness, and validated a Gradient Boosted Classifier on a stratified 20% holdout split. On out-of-sample evaluation (n = 6,000), the Gradient Boosted model achieved Precision@20 of 0.95 (versus 0.60 for the heuristic baseline), Precision@50 of 0.88 (versus 0.48), and ROC-AUC of 0.7468 (versus 0.5870). Combining calibrated decay probabilities with log-scaled search exposure yields an interpretable, reason-coded action playbook that directs editorial capacity toward high-impact pages exhibiting early signs of search performance decline.
+      </p>
+    </div>
+
+    <!-- SECTION 2: INTRODUCTION / PROBLEM STATEMENT -->
+    <h2>1. Introduction &amp; Problem Statement</h2>
+    <p>
+      In organic search operations, published content naturally experiences performance decay as competitor pages emerge, search intent evolves, and factual details age. Because manual editorial updates are costly, content teams cannot refresh every page simultaneously and must rely on prioritization queues.
+    </p>
+    <p>
+      Traditional content audit rules often rely on simple linear heuristics—such as multiplying total impressions by days since the last update. However, these static rules frequently misallocate effort: they over-prioritize evergreen pages that maintain stable rankings despite their age, while overlooking recently updated pages experiencing acute click-through rate (CTR) or SERP position erosion. This work supports <strong>weekly editorial refresh triage</strong> by replacing static age thresholds with a calibrated, risk-ranked decision-support engine.
+    </p>
+
+    <!-- SECTION 3: DATA -->
+    <h2>2. Data &amp; Public-Safe Governance</h2>
+    <ul>
+      <li><strong>Dataset Release &amp; Grain:</strong> Built on the FlyRank ML Internship Search Intelligence Panel (<code>content_refresh_anonymized.csv</code>), containing <strong>30,000</strong> anonymized page records (100% complete across required signals), where one row represents one unique page evaluated over a 30-day performance window (mid-panel snapshot <code>2026-03</code>) alongside 90-day historical exposure metrics.</li>
+      <li><strong>Observed Target Prevalence:</strong> Across the 30,000 records, <strong>54.2%</strong> of pages exhibit declining traffic trends (<code>trend_direction == 'down'</code>), while 45.8% remain stable or growing.</li>
+      <li><strong>Excluded Fields &amp; Leakage Protection:</strong> The field <code>trend_pct</code> was strictly excluded prior to modeling because it encodes the mathematical derivation of <code>trend_direction</code>, which would create severe target leakage. All page identifiers are anonymized (<code>PAGE_001</code>–<code>PAGE_010</code>) with zero client domains, URLs, or private search queries exposed.</li>
+    </ul>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Historical Signal</th>
+          <th>Mean</th>
+          <th>Std Dev</th>
+          <th>25th Pct</th>
+          <th>Median (50%)</th>
+          <th>75th Pct</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>content_age_days</code></td>
+          <td>256.17</td>
+          <td>132.71</td>
+          <td>132.00</td>
+          <td>236.00</td>
+          <td>333.00</td>
+        </tr>
+        <tr>
+          <td><code>days_since_last_update</code></td>
+          <td>46.10</td>
+          <td>42.08</td>
+          <td>20.00</td>
+          <td>20.00</td>
+          <td>104.00</td>
+        </tr>
+        <tr>
+          <td><code>impressions_90d</code></td>
+          <td>5,200.37</td>
+          <td>16,838.02</td>
+          <td>81.00</td>
+          <td>731.00</td>
+          <td>3,615.25</td>
+        </tr>
+        <tr>
+          <td><code>avg_position</code></td>
+          <td>16.34</td>
+          <td>15.22</td>
+          <td>6.20</td>
+          <td>10.80</td>
+          <td>22.30</td>
+        </tr>
+        <tr>
+          <td><code>ctr</code> (%)</td>
+          <td>0.51</td>
+          <td>3.28</td>
+          <td>0.00</td>
+          <td>0.07</td>
+          <td>0.29</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECTION 4: METHODOLOGY -->
+    <h2>3. Methodology &amp; Validation Design</h2>
+    <ul>
+      <li><strong>Target Label Definition:</strong> Binary indicator <code>target_declining = 1</code> when <code>trend_direction == 'down'</code>, and <code>0</code> otherwise.</li>
+      <li><strong>Leakage-Free Feature Engineering:</strong> Using strictly pre-decision historical metrics, we constructed 8 features: <code>content_age_days</code>, <code>days_since_last_update</code>, <code>impressions_90d</code>, <code>avg_position</code>, <code>ctr</code>, plus three domain interaction terms: <code>staleness_ratio = days_since_last_update / (content_age_days + 1)</code>, <code>exposure_per_day = impressions_90d / 90</code>, and <code>ctr_pos_interaction = ctr / (avg_position + 1)</code>.</li>
+      <li><strong>Baseline Benchmark:</strong> The Week 4 deterministic heuristic score: <code>baseline_score = impressions_90d * (days_since_last_update / 365)</code>.</li>
+      <li><strong>Validation Split &amp; Leakage Assertions:</strong> We evaluated models on an identical stratified 80/20 holdout split (24,000 training rows; 6,000 test rows; <code>random_state=42</code>). Automated assertions verified that neither <code>trend_pct</code> nor <code>trend_direction</code> entered the feature matrix.</li>
+    </ul>
+
+    <!-- SECTION 5: RESULTS -->
+    <h2>4. Results: Model vs. Heuristic Baseline</h2>
+    <p>
+      Evaluated on the same 6,000-page holdout set, the Gradient Boosted Classifier substantially outperformed the Week 4 deterministic baseline across every editorial review cutoff:
+    </p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-val">0.95</div>
+        <div class="kpi-label">Model Precision@20<br>(+0.35 over Baseline)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">0.88</div>
+        <div class="kpi-label">Model Precision@50<br>(+0.40 over Baseline)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">0.92</div>
+        <div class="kpi-label">Model Precision@100<br>(+0.42 over Baseline)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val">0.7468</div>
+        <div class="kpi-label">Holdout ROC-AUC<br>(vs. 0.5870 Baseline)</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Model / Ranking Strategy</th>
+          <th>Precision@20</th>
+          <th>Precision@50</th>
+          <th>Precision@100</th>
+          <th>ROC-AUC</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Week 4 Heuristic Baseline</td>
+          <td>0.6000</td>
+          <td>0.4800</td>
+          <td>0.5000</td>
+          <td>0.5870</td>
+        </tr>
+        <tr class="highlight-row">
+          <td>Gradient Boosted Classifier (Ours)</td>
+          <td>0.9500</td>
+          <td>0.8800</td>
+          <td>0.9200</td>
+          <td>0.7468</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="figure-box">
+      <img src="assets/capstone_results.png" alt="Ranking Precision@K and Feature Importance Chart" />
+      <div class="figure-caption">
+        <strong>Figure 1:</strong> Left — Top-K ranking precision on the 20% holdout split comparing the Gradient Boosted model against the Week 4 heuristic baseline. Right — Relative feature importance across historical search signals.
+      </div>
+    </div>
+
+    <!-- SECTION 6: LIMITATIONS & HONEST FRAMING -->
+    <h2>5. Limitations &amp; Honest Framing</h2>
+    <ul>
+      <li><strong>Observational &amp; Decision-Support Scope:</strong> Model scores reflect observed statistical associations within historical search metrics. They do not establish causal proof of Google's ranking algorithms nor guarantee post-refresh traffic gains.</li>
+      <li><strong>Cross-Sectional Seasonality:</strong> Because evaluation relies on a single snapshot window (<code>2026-03</code>), seasonal demand contractions (e.g., academic or retail cycles) cannot be distinguished from structural content obsolescence.</li>
+      <li><strong>Unobserved External SERP Dynamics:</strong> Competitor content launches, backlink shifts, and SERP feature changes (such as AI Overviews) are unobserved in this panel and can depress CTR independently of page age. On the top-10% impression slice (n = 600), observed decay rate was 0.512 versus a mean predicted probability of 0.521, confirming well-calibrated risk estimation without over-flagging high-volume pages.</li>
+    </ul>
+
+    <!-- SECTION 7: RANKED RECOMMENDATIONS -->
+    <h2>6. Ranked Recommendations &amp; Editorial Action Playbook</h2>
+    <p>
+      To operationalize predictions for editorial triage, we compute an exposure-weighted opportunity score (<code>ml_opportunity_score = gb_prob * log1p(impressions_90d)</code>) and map each prioritized page to a deterministic reason code and action playbook:
+    </p>
+    <ul>
+      <li><span class="code-tag">TOP10_LOW_CTR_DISCREPANCY</span> &rarr; <strong>TITLE_META_SNIPPET_REWRITE:</strong> High-ranking pages (Position &le; 10) capturing &lt; 0.5% CTR require immediate title tag, meta description, and rich-snippet alignment.</li>
+      <li><span class="code-tag">SERP_COMPETITIVE_DRIFT</span> &rarr; <strong>INTENT_GAP_AUDIT:</strong> High-impression pages slipping to positions 25–45 require competitive SERP analysis and section restructuring to regain first-page visibility.</li>
+      <li><span class="code-tag">HIGH_EXPOSURE_STALE_CONTENT</span> &rarr; <strong>FULL_CONTENT_REFRESH:</strong> High-volume pages untouched for &gt; 180 days require comprehensive factual updates and fresh examples.</li>
+    </ul>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Rank / ID</th>
+          <th>Decay Prob</th>
+          <th>Opp. Score</th>
+          <th>Reason Code</th>
+          <th>Recommended Action</th>
+          <th>90d Impr.</th>
+          <th>Avg Pos</th>
+          <th>CTR</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>#1 (<code>PAGE_001</code>)</td>
+          <td>0.822</td>
+          <td>9.538</td>
+          <td><code>SERP_COMPETITIVE_DRIFT</code></td>
+          <td>INTENT_GAP_AUDIT</td>
+          <td>109,577</td>
+          <td>34.4</td>
+          <td>0.04%</td>
+        </tr>
+        <tr>
+          <td>#2 (<code>PAGE_002</code>)</td>
+          <td>0.791</td>
+          <td>9.319</td>
+          <td><code>SERP_COMPETITIVE_DRIFT</code></td>
+          <td>INTENT_GAP_AUDIT</td>
+          <td>130,932</td>
+          <td>40.1</td>
+          <td>0.04%</td>
+        </tr>
+        <tr>
+          <td>#3 (<code>PAGE_003</code>)</td>
+          <td>0.819</td>
+          <td>9.284</td>
+          <td><code>SERP_COMPETITIVE_DRIFT</code></td>
+          <td>INTENT_GAP_AUDIT</td>
+          <td>84,093</td>
+          <td>45.6</td>
+          <td>0.00%</td>
+        </tr>
+        <tr>
+          <td>#4 (<code>PAGE_004</code>)</td>
+          <td>0.839</td>
+          <td>9.225</td>
+          <td><code>SERP_COMPETITIVE_DRIFT</code></td>
+          <td>INTENT_GAP_AUDIT</td>
+          <td>59,949</td>
+          <td>27.3</td>
+          <td>0.02%</td>
+        </tr>
+        <tr>
+          <td>#5 (<code>PAGE_005</code>)</td>
+          <td>0.792</td>
+          <td>9.206</td>
+          <td><code>TOP10_LOW_CTR_DISCREPANCY</code></td>
+          <td>TITLE_META_SNIPPET_REWRITE</td>
+          <td>112,434</td>
+          <td>7.2</td>
+          <td>0.01%</td>
+        </tr>
+        <tr>
+          <td>#6 (<code>PAGE_006</code>)</td>
+          <td>0.746</td>
+          <td>8.839</td>
+          <td><code>TOP10_LOW_CTR_DISCREPANCY</code></td>
+          <td>TITLE_META_SNIPPET_REWRITE</td>
+          <td>140,079</td>
+          <td>7.6</td>
+          <td>0.01%</td>
+        </tr>
+        <tr>
+          <td>#7 (<code>PAGE_007</code>)</td>
+          <td>0.849</td>
+          <td>8.506</td>
+          <td><code>TOP10_LOW_CTR_DISCREPANCY</code></td>
+          <td>TITLE_META_SNIPPET_REWRITE</td>
+          <td>22,462</td>
+          <td>4.6</td>
+          <td>0.14%</td>
+        </tr>
+        <tr>
+          <td>#8 (<code>PAGE_008</code>)</td>
+          <td>0.758</td>
+          <td>8.477</td>
+          <td><code>SERP_COMPETITIVE_DRIFT</code></td>
+          <td>INTENT_GAP_AUDIT</td>
+          <td>72,309</td>
+          <td>39.0</td>
+          <td>0.06%</td>
+        </tr>
+        <tr>
+          <td>#9 (<code>PAGE_009</code>)</td>
+          <td>0.822</td>
+          <td>8.379</td>
+          <td><code>SERP_COMPETITIVE_DRIFT</code></td>
+          <td>INTENT_GAP_AUDIT</td>
+          <td>26,755</td>
+          <td>31.4</td>
+          <td>0.01%</td>
+        </tr>
+        <tr>
+          <td>#10 (<code>PAGE_010</code>)</td>
+          <td>0.818</td>
+          <td>8.353</td>
+          <td><code>SERP_COMPETITIVE_DRIFT</code></td>
+          <td>INTENT_GAP_AUDIT</td>
+          <td>27,317</td>
+          <td>36.4</td>
+          <td>0.07%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- SECTION 8: REPRODUCIBILITY -->
+    <h2>7. Reproducibility &amp; Repository Artifacts</h2>
+    <ul>
+      <li><strong>GitHub Repository:</strong> <a href="https://github.com/tahaamjad2004/ml-internship" target="_blank">github.com/tahaamjad2004/ml-internship</a></li>
+      <li><strong>Capstone Modeling Notebook:</strong> <a href="https://github.com/tahaamjad2004/ml-internship/blob/main/work/notebooks/capstone.ipynb" target="_blank">work/notebooks/capstone.ipynb</a></li>
+      <li><strong>Week 4 Baseline Notebook:</strong> <a href="https://github.com/tahaamjad2004/ml-internship/blob/main/work/notebooks/w04_baseline_score.ipynb" target="_blank">work/notebooks/w04_baseline_score.ipynb</a></li>
+      <li><strong>Week 3 Data Contract Notebook:</strong> <a href="https://github.com/tahaamjad2004/ml-internship/blob/main/work/notebooks/w03_data_contract.ipynb" target="_blank">work/notebooks/w03_data_contract.ipynb</a></li>
+      <li><strong>Validation Metrics Receipt:</strong> <code>work/outputs/capstone_metrics.json</code></li>
+    </ul>
+
+    <!-- SECTION 9: ACKNOWLEDGMENTS & DATA CREDIT -->
+    <footer>
+      <strong>Acknowledgments &amp; Data Credit:</strong> Built on the FlyRank ML Internship dataset (<a href="https://flyrank.ai" target="_blank" rel="noopener">https://flyrank.ai</a>). All analyses adhere to strict public-safe data governance and anti-leakage standards.
+    </footer>
+  </div>
+</body>
+</html>
